@@ -1,12 +1,30 @@
 <?php
 namespace App\Views;
 
+use App\Config;
 use App\Core\CoreView;
 
 class SearchView extends CoreView 
 {
 
     public function renderList(array $list)
+    {
+        $content = '';
+
+        if (!empty($list)) {
+            $content .= $this->getListHtml($list);
+        }
+        
+        return $this->setContent($content)
+                    ->getHtml();
+    }
+
+    private function getPoster($poster)
+    {
+        return (!empty($poster) && $poster != 'N/A') ? $poster : Config::get('IMG_DEFAULT');
+    }
+
+    private function getListHtml($list)
     {
         $content = '';
 
@@ -23,20 +41,28 @@ class SearchView extends CoreView
                     </thead>
                     <tbody>';
             foreach($list as $item) {
-                $content .= '
-                            <tr>
-                                <th scope="row">'.$item->imdbID.'</th>
-                                <td>'.$item->Title.'</td>
-                                <td>'.$item->Year.'</td>
-                                <td><img src="'.$item->Poster.'" width="100" alt="'.$item->Title.'"></td>
-                            </tr>';
+                $content .= $this->getListItemHtml((object)$item);
             }
             $content .= '
                 </tbody>
             </table>';
         }
-        
-        return $this->setContent($content)
-                    ->getHtml();
+
+        return $content;
+    }
+
+    private function getListItemHtml($item)
+    {
+        $content = '';
+
+        $content .= '
+            <tr>
+                <th scope="row">'.$item->imdbID.'</th>
+                <td>'.$item->Title.'</td>
+                <td>'.$item->Year.'</td>
+                <td><img src="'.$this->getPoster($item->Poster).'" width="100" alt="'.$item->Title.'"></td>
+            </tr>';
+            
+        return $content;
     }
 }
