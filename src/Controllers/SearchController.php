@@ -1,4 +1,12 @@
 <?php
+/**
+ * Controlador de las búsquedas
+ *
+ * @package    Buscador-IMDb\App
+ * @author     Javier Glez
+ * @since      0.1.0
+ */
+
 namespace App\Controllers;
 
 use App\Config;
@@ -10,6 +18,11 @@ use Rooxie\OMDb;
 class SearchController extends CoreController 
 {
 
+    /**
+     * Devuelve el HTML principal de búsqueda
+     *
+     * @return string Html a renderizar
+     */
     public function index()
     {
         $list = $this->findMovies();
@@ -17,7 +30,11 @@ class SearchController extends CoreController
         return $searchView->renderList($list);
     }
 
-    
+    /**
+     * Buscador de películas
+     *
+     * @return array Pelis encontradas
+     */
     private function findMovies()
     {
         $return = [];
@@ -27,7 +44,7 @@ class SearchController extends CoreController
                 $search = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_STRING);
                 $omdb = new OMDb(Config::get('OMDB_KEY'));
                 $movies = $omdb->search($search, 'movie');
-                $return = $movies['Search'];
+                $return = ($movies['totalResults'] > 0) ? $movies['Search'] : [];
             }
         } catch (\Throwable $e) {}
         
