@@ -11,8 +11,14 @@ class SearchView extends CoreView
     {
         $content = '';
 
-        if (!empty($list)) {
-            $content .= $this->getListHtml($list);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!empty($list)) {
+                $content .= $this->getListHtml($list);
+            } else {
+                $content .= '<div class="alert alert-warning text-center my-5" role="alert">No hay resultados. Búsca otra vez!!</div>';
+            }
+        } else {
+            $content .= '<div class="alert alert-info text-center my-5" role="alert">Haz una búsqueda para empezar!!</div>';
         }
         
         return $this->setContent($content)
